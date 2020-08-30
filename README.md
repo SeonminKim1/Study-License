@@ -1,4 +1,4 @@
-# Prepare_license
+# License-and-summary-file
 ADP / 정처기 / IOT 지식능력검정 등
 
 

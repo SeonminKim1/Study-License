@@ -1,0 +1,89 @@
+OpenCL (Open Computer Language)
+- GPU뿐만 아니라 CPU포함 병렬 컴퓨팅 프로그램 개발위한 공개 표준.
+
+(성공) VisualStudio Maxinum : 2017(o), 2019(x) / Cuda 10.0 / OpenCV 3.4.0 / GPU : RTX 2070 , CPU : AMD Ryzen 7 2700X
+(성공) VisualStudio 2017 / Cuda 10.0 / OpenCV 3.4.0 / GPU : GTX 1050 / CPU : Intel Core I7 / 노트북명 : 오딧세이
+
+--------------------------------------------------------------------------
+(0) YOLO 설치하기 (기본 순서 설명)
+링크 : https://studyingcoder.blogspot.com/2019/04/open-source-yolo-v3.html
+- Visual Studio 설치 -> CUDA 설치 -> cuDNN설치->OpenCV->Darknet 다운로드
+
+(1) 쿠다 툴킷 다운로드 10.0 설치 OpenCV 3.4.0 CUDNN 7.5.1 파일안에 다 있음
+링크 : https://developer.nvidia.com/cuda-10.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal
+- 자기 거에 맞는 것 설치
+
+ex) the graphics driver could not find compatible graphics hardware cuda 이런경고뜨면 설치하지말고 다시 다른 버전으로 본인의 그래픽카드에 맞는 걸로 받아야 함.
+
+XXXXX -(2) 쿠다 툴킷 문서 활성화 (예제)하기 (x) 필요없음
+링크 : file:///C:/Program%20Files/NVIDIA%20GPU%20Computing%20Toolkit/CUDA/v10.0/doc/html/cuda-quick-start-guide/index.html#windows-local
+(쿠다설치하면 마지막에 공식문서 다운로드 받을 수 있음)
+
+(2-1) darknet 켰을때
+처음 비쥬얼 스튜디오 키면 해당 버전 v141 로 업데이트 들거임 (o) -> 확인
+로딩시 오류 추가 안뜨고(잘 켜졌고) 맨 위 메뉴 항목중 Nsight가 있으면 잘 설치된 것 (o)
+
+xxxx- (3) 쿠다 비쥬얼스튜디오 옵션 설정하기  - gpu 코딩 예제 해보기 - 굳이 yolo엔 필요없음
+링크 : https://www.youtube.com/watch?v=3usDbpnn7E8
+
+(4) 비쥬얼스튜디오  property -> C/C++ -> general -> additional include directories의 include 경로중 opencv, cuDNN, CUDA 경로가 본인이 설치한 경로로 맞게 설정 (바탕화면 HSMC)안으로 통일 !! 본인 경로에 맞게 할 것 !!! 복붙 ㄴㄴ
+
+1 $(OPENCV_DIR)\include;
+2 C:\opencv_3.0\opencv\build\include; 
+-> 1,2번 한번에 C:\Users\Admin\Desktop\HSEC\opencv\build\include 로 가능.
+3 ..\..\include; 
+->공통경로 : 현재 프로젝트 폴더에서 상위폴더 두번째 에서의 include
+4 ..\..\3rdparty\stb\include; 
+-> 위와 같음
+5 ..\..\3rdparty\pthreads\include; 
+-> 위와 같음
+6 %(AdditionalIncludeDirectories); 
+-> 위와 같은 공통경로
+7 $(CudaToolkitIncludeDir); 
+8 $(CUDNN)\include; 
+9 $(cudnn)\include
+-> 8,9번 시스템 환경변수에 보면 CUDNN있음. 즉 CUDA 설치 해주면서 자동으로 PATH를 잡아준 것
+
+(5) 프로젝트 설정 페이지 -> CUDA C/C++ -> device -> code generation에서 본인의 architecture에 맞는 값 입력
+https://developer.nvidia.com/cuda-gpus -> gtx1050 GPU Number 보는 사이트 1050은 6.1
+
+예시(참고만 하세요)
+compute_30,sm_30;compute_75,sm_75
+               V
+compute_61,sm_61;compute_61,sm_61
+
+(6) 프로젝트 설정 페이지 -> Linker -> general -> Additional Library Directories 를 본인이 설치한 폴더의 라이브러리 폴더로 변경
+1 C:\opencv_2.4.9\opencv\build\x86\vc14\lib;
+2 C:\opencv_2.4.9\opencv\build\x86\vc12\lib;
+-> 1,2 통합 C:\Users\Admin\Desktop\HSEC\opencv\build\x64\vc15\lib -> OpenCV 3.4.0 기준임 !!!
+3 $(CUDA_PATH)lib\$(PlatformName);
+4 $(cudnn)\lib\x64;
+5 ..\..\3rdparty\pthreads\lib;
+6 %(AdditionalLibraryDirectories)
+-> 3,4,5,6 환경변수에 이미 자동으로 잡혀져 있음! 
+
+(7) OpenCV, CUDA 관련 dll 파일 복사해서 darknet.exe 생성되는 곳에 넣어놓기!
+- 나중에 컴파일 하면 darknet-master\darknet-master\build\darknet\x64에 darknet.exe 가 생성될 것임 !
+
+opencv_world401.dll -> C:\Users\Admin\Desktop\HSEC\opencv\build\x64\vc15\bin
+opencv_ffmpeg401_64.dll -> C:\Users\Admin\Desktop\HSEC\opencv\build\x64\vc15\bin
+cusolver64_90.dll -> C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin
+curand64_90.dll -> C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin 
+cudart64_90.dll -> C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin
+cublas64_90.dll -> C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin
+저 파일이 어디에 있나 경로 찾는법 -> CUDA의 기본 설치가 어디에 깔려있는지 경로를 보면 됨 !
+찾아서 넣기 옆에 401 or 90은 버전임! 우리는 3.4니까 340 ex)3.4.2면 342같은
+
+(8) 솔루션 빌드 -> 빌드시 모드 debug , x64 모드로 실행
+- 빌드 성공시 만세 부르고 안됬으면 다시 처음으로 ㅎ
+
+(9) weight 파일 다운받아서 넣어놓기
+- yolov3.weights 라던가, yolov3-tiny.weights ->  C:\Users\Admin\Desktop\HSEC\darknet-master\build\darknet\x64 여기에 넣어놓기
+- 맨아래쪽에 다운로드 홈페이지 있음 - https://studyingcoder.blogspot.com/2019/04/open-source-yolo-v3.html
+
+(10) 실행 
+cmd 창 키고 
+(1) cd C:\Users\Admin\Desktop\HSEC\darknet-master\build\darknet\x64 
+(2) darknet.exe detector test ./cfg/coco.data 
+(3) darknet.exe detector test ./cfg/coco.data ./cfg/yolov3.cfg ./yolov3.weights ./data/dog.jpg
+위 예제가 안될시 다른 인터넷 예제를 찾아 볼 것

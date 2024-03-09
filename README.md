@@ -1,4 +1,4 @@
-# License-and-summary-file
+# 자격증 공부 요약 파일
 SQLD / ADSP / 정처기 / IOT 지식능력검정 등
 
 ## SQLD (SQL 개발자)
